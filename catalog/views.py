@@ -16,6 +16,19 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
+class AdminManager:
+
+    @staticmethod
+    def admin_orders(request):
+        if not request.user.is_superuser:
+            redirect('/')
+
+        context = OrderManager.manage_one(request, admin=True) if request.GET.get('pk') \
+            else OrderManager.manage_multiple(request, admin=True)
+
+        return render(request, 'admin/orders.html', context)
+
+
 # Класс содержит методы работы с корзиной и заказами
 class OrderManager:
 
@@ -126,40 +139,56 @@ class OrderManager:
         if not request.user.is_authenticated:
             return redirect('login')
 
+        context = OrderManager.manage_one(request) if request.GET.get('pk') else OrderManager.manage_multiple(request)
+
+        return render(request, 'profile/orders.html', context)
+
+    @staticmethod
+    def manage_multiple(request, admin=False):
+        """
+        Метод возвращает словарь с данными о заказах
+        """
+        if admin:
+            order_items = Order.objects.all()
+        else:
+            order_items = Order.objects.filter(user=request.user)
+
+        order_items_filtered = [
+            {'name': 'В обработке', 'items': order_items.filter(status_id=1)},
+            {'name': 'Готов к выдаче', 'items': order_items.filter(status_id=2)},
+            {'name': 'Завершен', 'items': order_items.filter(status_id=3)},
+            {'name': 'Отменен', 'items': order_items.filter(status_id=4)},
+        ]
+
+        order_item_items = {}
+        for item in order_items:
+            order_item_items[item] = OrderItem.objects.filter(order=item)
+
+        context = {
+            'order_items': order_items_filtered,
+            'order_item_items': order_item_items,
+            'common': 'common/order_list.html'
+        }
+        return context
+
+    @staticmethod
+    def manage_one(request, admin=False):
+        """
+        Метод возвращает словарь с данными одного заказа
+        """
         pk = request.GET.get('pk')
 
-        if not pk:
-            if request.user.is_superuser:
-                order_items = Order.objects.all()
-            else:
-                order_items = Order.objects.filter(user=request.user)
+        if not admin:
+            try:
+                Order.objects.get(id=pk, user=request.user)
+            except Order.DoesNotExist:
+                return redirect('/')
 
-            temp_dict = [
-                {'name': 'В обработке', 'items': order_items.filter(status_id=1)},
-                {'name': 'Готов к выдаче', 'items': order_items.filter(status_id=2)},
-                {'name': 'Завершен', 'items': order_items.filter(status_id=3)},
-                {'name': 'Отменен', 'items': order_items.filter(status_id=4)},
-            ]
+        order = Order.objects.get(id=pk)
+        order_items = OrderItem.objects.filter(order=order)
 
-            order_item_items = {}
-            for item in order_items:
-                order_item_items[item] = OrderItem.objects.filter(order=item)
-
-            context = {'order_items': temp_dict, 'order_item_items': order_item_items}
-
-        else:
-            if not request.user.is_superuser:
-                try:
-                    Order.objects.get(id=pk, user=request.user)
-                except Order.DoesNotExist:
-                    return redirect('/')
-
-            order = Order.objects.get(id=pk)
-            order_items = OrderItem.objects.filter(order=order)
-
-            context = {'order': order, 'order_items': order_items}
-
-        return render(request, 'profile/orders.html', context=context)
+        context = {'order': order, 'order_items': order_items, 'common': 'common/order_detail.html'}
+        return context
 
     @staticmethod
     def update_order(request, action, pk):

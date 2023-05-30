@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if order %}Данные о заказе {{ order.id }}{% else %}Заказы{% endif %} - Healthy Habits
+{% endblock title %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}">
+{% endblock styles %}
+
+
+{% block content %}
+    <div class="d-flex justify-content-between">
+        <a href="#">Акции</a>
+        <a href="#">База данных</a>
+        <a href="{% url 'admin_orders' %}">Заказы</a>
+        <a href="#">Пользователи</a>
+    </div>
+    {% include common %}
+{% endblock content %}

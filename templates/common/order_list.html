@@ -1,0 +1,63 @@
+<div class="text-center">
+    {% for i in order_items %}
+        {% if i.items %}
+            <div style="padding-top: 40px; padding-bottom: 40px">
+                <strong><a style="font-size: 20px">{{ i.name }}</a></strong>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr class="align-middle">
+                        <th scope="col">id</th>
+                        <th scope="col">ФИО</th>
+                        <th scope="col">Контакты</th>
+                        <th scope="col">Способ доставки</th>
+                        <th scope="col" >Адрес</th>
+                        <th scope="col">Кол-во товаров</th>
+                        <th scope="col">Общая стоимость</th>
+                        <th scope="col">Стоимость доставки</th>
+                        <th scope="col">Итого к оплате</th>
+                        <th scope="col">Способ оплаты</th>
+                        <th scope="col">Статус заказа</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in i.items %}
+                        <tr class="align-middle" style="font-size: 12px; cursor: pointer; cursor: hand;" onclick="window.location='{{ request.path }}?pk={{ item.id }}';">
+                            <th scope="row" >{{ item.id }}</th>
+                            <td>{{ item.details.full_name }}</td>
+                            <td>
+                                {{ item.details.phone_number }}<br>
+                                {{ item.user.email }}
+                            </td>
+                            <td>
+                                {% if item.details.delivery_method == '1' %}Курьерская доставка{% endif %}
+                            </td>
+                            <td>
+                                {{ item.details.city }}, {{ item.details.delivery_address }}
+                            </td>
+                            <td>{{ item.total_quantity }}</td>
+                            <td>{{ item.total_price|price_format }}</td>
+                            <td>{{ item.delivery_price|price_format }}</td>
+                            <td>{{ item.final_price|price_format }}</td>
+                            <td>
+                                {% if item.details.payment_method == '1' %}Картой онлайн
+                                {% elif item.details.payment_method == '2' %}Картой курьеру
+                                {% elif item.details.payment_method == '3' %}Наличными
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a style="color:
+                                {% if item.status_id == 1 %}#056dfc
+                                {% elif item.status_id == 2 %}green
+                                {% elif item.status_id == 4 %}red
+                                {% else %}black{% endif %};">
+                                    {{ item.status }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endfor %}
+</div>

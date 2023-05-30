@@ -1,0 +1,121 @@
+<div class="text-center">
+    <div style="padding-top: 40px; padding-bottom: 40px">
+        <strong><a style="font-size: 20px">Данные о заказе</a></strong>
+    </div>
+    <table class="table">
+        <thead>
+            <tr class="align-middle">
+                <th scope="col">id</th>
+                <th scope="col">ФИО</th>
+                <th scope="col">Контакты</th>
+                <th scope="col">Способ доставки</th>
+                <th scope="col" >Адрес</th>
+                <th scope="col">Кол-во товаров</th>
+                <th scope="col">Общая стоимость</th>
+                <th scope="col">Стоимость доставки</th>
+                <th scope="col">Итого к оплате</th>
+                <th scope="col">Способ оплаты</th>
+                <th scope="col">Статус заказа</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="align-middle" style="font-size: 12px;">
+                <th scope="row" >{{ order.id }}</th>
+                <td>{{ order.details.full_name }}</td>
+                <td>
+                    {{ order.details.phone_number }}<br>
+                    {{ order.user.email }}
+                </td>
+                <td>
+                    {% if order.details.delivery_method == '1' %}Курьерская доставка{% endif %}
+                </td>
+                <td>
+                    {{ order.details.city }}, {{ order.details.delivery_address }}
+                </td>
+                <td>{{ order.total_quantity }}</td>
+                <td>{{ order.total_price|price_format }}</td>
+                <td>{{ order.delivery_price|price_format }}</td>
+                <td>{{ order.final_price|price_format }}</td>
+                <td>
+                    {% if order.details.payment_method == '1' %}Картой онлайн
+                    {% elif order.details.payment_method == '2' %}Картой курьеру
+                    {% elif order.details.payment_method == '3' %}Наличными
+                    {% endif %}
+                </td>
+                <td>
+                    <a style="color:
+                    {% if order.status_id == 1 %}#056dfc
+                    {% elif order.status_id == 2 %}green
+                    {% elif order.status_id == 4 %}red
+                    {% else %}black{% endif %};">
+                        {{ order.status }}
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="padding-top: 40px; padding-bottom: 40px">
+        <strong><a style="font-size: 20px">Состав заказа</a></strong>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr class="align-middle">
+                <th scope="col"></th>
+                <th scope="col">Изображение</th>
+                <th scope="col">Наименование</th>
+                <th scope="col">Размер</th>
+                <th scope="col">Количество</th>
+                <th scope="col">Цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+                <tr class="align-middle" style="cursor: pointer; cursor: hand;" onclick="window.location='{{ item.productinstance.product.get_url }}';">
+                    <th scope="row" >{{ forloop.counter }}</th>
+                    <td><img src="/{{ item.productinstance.product.image }}" class="img-fluid" width="100"></td>
+                    <td>{{ item.productinstance.product.name }}</td>
+                    <td>{{ item.productinstance.size.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.productinstance.product.price|price_format }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if order.details.comment %}
+        <div class="alert alert-warning" role="alert">
+            <h5 class="alert-heading">Комментарий к заказу</h5>
+            <p></p>
+            <hr>
+            <p class="mb-0">{{ order.details.comment }}</p>
+        </div>
+    {% endif %}
+    {% if user.is_superuser %}
+        <div class="d-grid gap-2">
+            {% if order.status_id == 1 %}
+                <a class="btn btn-primary" href="{% url 'update_order' action='ready' pk=order.id %}" role="button">
+                    Подтвердить готовность заказа
+                </a>
+            {% elif order.status_id == 2 %}
+                <a class="btn btn-primary" href="{% url 'update_order' action='process' pk=order.id %}" role="button">
+                    Вернуть заказ на доработку
+                </a>
+                <a class="btn btn-success" href="{% url 'update_order' action='complete' pk=order.id %}" role="button">
+                    Завершить заказ
+                </a>
+            {% elif order.status_id == 3 %}
+                <a class="btn btn-primary" href="{% url 'update_order' action='process' pk=order.id %}" role="button">
+                    Возобновить заказ
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="d-grid gap-2" style="padding-top: 5px;">
+        {% if order.status_id == 1 or order.status_id == 2 and order.status_id != 4 %}
+            <a class="btn btn-danger" href="{% url 'update_order' action='cancel' pk=order.id %}" role="button">Отменить заказ</a>
+        {% elif order.status_id == 4 %}
+            <a class="btn btn-primary" href="{% url 'update_order' action='process' pk=order.id %}" role="button">
+                Возобновить заказ
+            </a>
+        {% endif %}
+    </div>
+</div>

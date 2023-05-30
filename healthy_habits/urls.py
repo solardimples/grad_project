@@ -24,6 +24,8 @@ from catalog.forms import CustomPasswordResetForm, CustomSetPasswordForm
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),  # главная страница
+    # Маршруты для работы с администрацией сайта
+    path('admin-orders', views.AdminManager.admin_orders, name='admin_orders'),  # управление заказами (админка)
     # Маршруты для работы с каталогом товаров
     path('catalog', views.ProductListView.as_view(), name='catalog'),  # каталог всех товаров
     path('catalog/<str:category>', views.ProductListView.as_view(), name='category'),  # каталог категории товаров

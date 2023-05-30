@@ -50,6 +50,14 @@
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <li><h6 class="dropdown-header">Личный кабинет</h6></li>
                         <li><a class="dropdown-item" href="{% url 'manage_orders' %}">Мои заказы</a></li>
+                        {% if user.is_superuser %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Админка</h6></li>
+                            <li><a class="dropdown-item" href="#">Акции</a></li>
+                            <li><a class="dropdown-item" href="#">База данных</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin_orders' %}">Заказы</a></li>
+                            <li><a class="dropdown-item" href="#">Пользователи</a></li>
+                        {% endif %}
                     </ul>
                 {% else %}
                     <a class="m-2 link-main" href="{% url 'login' %}?next={{ request.path }}">Войти</a>
