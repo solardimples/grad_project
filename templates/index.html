@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Онлайн-магазин спортивных товаров Healthy Habits{% endblock title %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+{% endblock styles %}
+
+
+{% block content %}
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'images/promotions/carousel/carousel_1.jpg' %}" class="d-block w-100">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/promotions/carousel/carousel_2.jpg' %}" class="d-block w-100">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/promotions/carousel/carousel_3.jpg' %}" class="d-block w-100">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"  data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Предыдущий</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"  data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Следующий</span>
+        </button>
+    </div>
+    <div class="row" style="padding-top: 20px;">
+        <div class="w-25">
+            <img src="{% static 'images/promotions/mini_1.jpg' %}" class="d-block w-100">
+        </div>
+        <div class="w-25">
+            <img src="{% static 'images/promotions/mini_2.jpg' %}" class="d-block w-100">
+        </div>
+        <div class="w-25">
+            <img src="{% static 'images/promotions/mini_3.jpg' %}" class="d-block w-100">
+        </div>
+        <div class="w-25">
+            <img src="{% static 'images/promotions/mini_4.jpg' %}" class="d-block w-100">
+        </div>
+    </div>
+    <div class="text-center" style="padding-top: 15px;">
+        <div class="m-5">
+            <strong><a style="font-size: 20px">Новинки</a></strong>
+        </div>
+        <div class="row">
+            {% for product in new_products %}
+                <!-- Карточка товара -->
+                <div class="card card-index col-2 border-0 p-3 text-center" style="margin-right: 8px; margin-bottom: 5px;">
+                    <div class="h-75 image-wrapper">
+                        <img src="/{{ product.image }}" class="img-fluid">
+                    </div>
+                    <div class="card-body">
+                        <p><strong>{{ product.price|price_format }}</strong></p>
+                        <small><strong>{{ product.brand.name }}</strong></small><br>
+                        <small>{{ product.name }}</small>
+                        <a href="{{ product.get_url }}" class="stretched-link"></a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

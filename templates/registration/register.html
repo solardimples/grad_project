@@ -1,0 +1,49 @@
+{% extends 'registration/base.html' %}
+{% load static %}
+
+{% block title %}Регистрация - Healthy Habits{% endblock title %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/registration.css' %}">
+{% endblock styles %}
+
+{% block content_name %}Регистрация{% endblock content_name %}
+
+{% block content %}
+    <form class="row g-2" method="post" action="">
+        <!-- ЗАЩИТА ФОРМЫ    -->
+        {% csrf_token %}
+        {% for field in form %}
+            <div style="margin-top: 16px;">
+                <div class="form-floating">
+                   {{ field }}
+                    <label for="floatingInput">{{ field.label }}</label>
+                </div>
+                {% if field.errors %}
+                    <div class="error text-center">
+                        {% for error in field.errors %}
+                            {% if field == form.password2 and error != 'Пароли не совпадают.' %}
+                            {% else %}
+                                {{ error }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <div class="form-check text-start" style="margin-top: 16px;">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" required checked>
+                Я ознакомил(ся/ась) и принимаю условия <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Пользовательского Соглашения</a>
+            </label>
+        </div>
+        <!-- Кнопка отправки -->
+        <button type="submit" class="btn btn-dark" style="margin-top: 10px;">
+            Создать аккаунт
+        </button>
+        <div class="mt-2 text-center">
+            <a class="link-main" href="/accounts/login?next={{ redirect_page }}">Уже есть аккаунт? Войти</a>
+        </div>
+    </form>
+{% endblock content %}

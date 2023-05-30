@@ -1,0 +1,83 @@
+.div-content {
+    background-color: white;
+    border-radius: 10px;
+}
+/* Стиль ошибок в формах  */
+.error {
+    color: #dd3243;
+}
+/* Стили для чекбокса в форме фильтрации товаров в каталоге */
+.form-check {
+    color: black;
+}
+.form-check:hover {
+}
+.form-check a {
+    color: gray;
+    text-decoration: none;
+}
+.form-check:hover a:hover {
+  color: #fedb34;
+}
+.form-check-input:focus  {
+    box-shadow:none !important;
+}
+.form-check .form-check-input:checked {
+    border-color: #D3D3D3;
+    background-color: white;
+}
+.form-control:focus  {
+    border-color: black !important;
+    box-shadow:none !important;
+}
+/* Стиль чекбоксов  */
+input[type="checkbox"] {
+    font: inherit;
+    color: black;
+    width: 1.15em;
+    height: 1.15em;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+}
+input[type="checkbox"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    transform: scale(0);
+    transform-origin: center;
+    transition: 120ms transform ease-in-out;
+    box-shadow: none;
+    background-color: black;
+}
+input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+input[type="checkbox"]:focus {
+    outline-offset: max(2px, 0.15em);
+}
+/* Стили главных ссылок  */
+.link-main {
+    color: black;
+    text-decoration: none;
+}
+.link-main:hover {
+    color: #fedb34;
+}
+/* Стиль курсора при наведении  */
+label {
+    cursor: pointer;
+}
+/* Стиль для главного текста  */
+.text-main {
+    color: black;
+    text-decoration: none;
+}
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}

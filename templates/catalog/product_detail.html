@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+{% load my_filters  %}
+
+{% block title %}{{ product.name }} - Healthy Habits{% endblock title %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/catalog.css' %}">
+{% endblock styles %}
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a class="link-minor" href="/">Главная</a></li>
+            <li class="breadcrumb-item"><a class="link-minor" href="{% url 'catalog' %}">Каталог</a></li>
+            <li class="breadcrumb-item"><a href="{{ category_link }}" class="link-minor">{{ category }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">{{ product.name }}</a></li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col">
+            <!-- Картинки -->
+            <div class="row">
+                <div class="col-2 p-3">
+                    <div class="h-25 image-wrapper">
+                        <img src="/{{ product.image }}" class="img-fluid;">
+                    </div>
+                </div>
+                <div class="col-1"></div>
+                <div class="col-9 p-3 text-center">
+                    <div class="h-100 image-wrapper">
+                        <img src="/{{ product.image }}" class="img-fluid;">
+                    </div>
+                </div>
+            </div>
+            <!-- Описание -->
+            <div class="row">
+                <div class="p-3" style="margin-top: 30px;">
+                    <p class="lead">Описание</p>
+                    <p style="margin-left: 30px;">{{ product.description }}</p>
+                    <p class="text-minor" style="margin-left: 30px;">Информация о характеристиках, комплекте поставки,
+                        внешнем виде и цвете товара носит справочный характер и основывается на последних доступных к
+                        моменту публикации сведениях.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-1"></div>
+        <!-- Бренд, цена + форма с размерами и добавлением в корзину -->
+        <div class="col-4 p-3">
+            <a href="#"><img src="/{{ product.brand.image }}" class="img-fluid;"></a>
+            <div style="padding-top: 30px; padding-bottom: 25px;">
+                <p class="lead" style="font-size: 25px;">
+                    <strong>{{ product.brand.name }}</strong>
+                    <br>{{ product.name }}
+                </p>
+            </div>
+            <a style="font-size: 25px;"><strong>{{ product.price|price_format }}</strong></a>
+            {% if form %}
+                <form method="post" action="{% url 'add' product_id=pk %}">
+                    {% csrf_token %}
+                    <div style="padding-top: 30px; padding-bottom: 20px;">
+                        {% for field in form %}
+                            {% for choice in field %}
+                                <div class="form-check form-check-inline">
+                                    <p class="lead">{{ choice }}</p>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-dark">Добавить в корзину</button>
+                    </div>
+                </form>
+            {% elif sold_out %}
+                <div class="error" style="padding-top: 30px; padding-bottom: 40px;">
+                    {{ sold_out }}
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-dark" disabled>Добавить в корзину</button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends 'registration/base.html' %}
+{% load static %}
+
+{% block title %}Вход - Healthy Habits{% endblock title %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/registration.css' %}">
+{% endblock styles %}
+
+{% block content_name %}Вход{% endblock content_name %}
+
+{% block content %}
+    <form class="row g-2" method="post" action="">
+        <!-- ЗАЩИТА ФОРМЫ -->
+        {% csrf_token %}
+        <!-- Поля формы -->
+        {% for field in form %}
+            <div class="mb-2">
+                <div class="form-floating">
+                   {{ field }}
+                    <label for="floatingInput">{{ field.label }}</label>
+                </div>
+                {% if field.errors %}
+                    <div class="error text-center">
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <!-- Кнопка отправки -->
+        <button type="submit" class="btn btn-dark">Войти</button>
+        <div class="mt-2 text-center">
+            <a class="link-main" href="{% url 'password_reset' %}">Забыли пароль?</a>
+            <a class="link-main" href="{% url 'register' %}?next={{ redirect_page }}">Создать аккаунт</a>
+        </div>
+    </form>
+{% endblock content %}

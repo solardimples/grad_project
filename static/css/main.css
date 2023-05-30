@@ -1,0 +1,75 @@
+/* Стиль ошибок в формах  */
+.error {
+    color: #dd3243;
+}
+/* Стиль для футера  */
+.footer {
+    background-color: black;
+    color: white;
+}
+/* Стили для фото товаров в каталоге  */
+.image-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+}
+.image-wrapper img {
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 100%;
+    max-width: 100%;
+}
+/* Стиль курсора при наведении  */
+label {
+    cursor: pointer;
+}
+/* Стиль значка количества товаров в корзине  */
+#lblCartCount {
+    font-size: 12px;
+    background: #f7abae;
+    color: #fff;
+    padding: 0 4px;
+    vertical-align: top;
+    margin-left: -10px;
+}
+/* Стили главных ссылок  */
+.link-main {
+    color: black;
+    text-decoration: none;
+}
+.link-main:hover {
+    color: #fedb34;
+}
+/* Стили второстепенных ссылок  */
+.link-minor {
+    color: gray;
+    text-decoration: none;
+    font-size: 14px;
+}
+.link-minor:hover {
+    color: #fedb34;
+}
+/* Стиль для изменения цвета навигационного поля  */
+.navbar-custom {
+    background-color: #fafaf5;
+}
+/* Стиль для главного текста  */
+.text-main {
+    color: black;
+    text-decoration: none;
+}
+/* Стиль для второстепенного текста  */
+.text-minor {
+    color: gray;
+    text-decoration: none;
+    font-size: 14px;
+}
+/* Стили иконки удаления товара из корзины  */
+.trash-icon {
+    color: black;
+    text-decoration: none;
+}
+.trash-icon:hover {
+    color: #dd3243;
+}

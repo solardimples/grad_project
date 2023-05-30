@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %}
+{% load my_filters  %}
+
+{% block title %}Каталог товаров - Healthy Habits{% endblock title %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/catalog.css' %}">
+{% endblock styles %}
+
+{% block content %}
+    <!-- Крошки -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a class="link-minor" href="/">Главная</a></li>
+            {% if not category == 'Каталог' %}
+                <li class="breadcrumb-item"><a class="link-minor" href="{% url 'catalog' %}">Каталог</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">{{ category }}</a></li>
+        </ol>
+    </nav>
+    <div class="row">
+        <!-- Блок формы фильтрации данных на странице -->
+        <div class="col-3 p-3">
+            <form method="GET">
+                <div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
+                    {% for field in form %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="panelsStayOpen-heading-{{ forloop.counter }}">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse-{{ forloop.counter }}" aria-expanded="true" aria-controls="panelsStayOpen-collapse-{{ forloop.counter }}">
+                                    {{ field.label }}
+                                </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapse-{{ forloop.counter }}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-heading-{{ forloop.counter }}">
+                                <div class="accordion-body">
+                                    {% for choice in field %}
+                                        <div class="form-check" style="margin-bottom: 10px;">
+                                            {{ choice }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="d-grid gap-2 text-center" style="padding-bottom: 15px">
+                    <button type="submit" class="btn btn-outline-dark">Показать</button>
+                </div>
+                <div class="text-center">
+                    <a href="{{ request.path }}" class="link-main">Сбросить все фильтры</a>
+                </div>
+            </form>
+        </div>
+        <!-- Блок списка товаров -->
+        <div class="col-9">
+            <p class="lead">
+            {% if category == 'Одежда' %}
+            Купить спортивную одежду
+            {% elif category == 'Обувь' %}
+            Купить спортивную обувь
+            {% elif category == 'Снаряжение' %}
+            Купить спортивное снаряжение
+            {% else %}
+            Каталог спортивной одежды, обуви и снаряжения
+            {% endif %} <a style="color: gray;">{{ paginator.count|product_count }}</a></p>
+            {% for row in product_list|batch:4 %}
+                <div class="row">
+                    {% for product in row %}
+                        <!-- Карточка товара -->
+                        <div class="card card-catalog border-0 w-25 p-3 text-center" style="margin-right: 5px; margin-bottom: 5px;">
+                            <div class="h-75 image-wrapper">
+                                <img src="/{{ product.image }}" class="img-fluid">
+                            </div>
+                            <div class="card-body">
+                                <p><strong>{{ product.price|price_format }}</strong></p>
+                                <a href="{{ product.get_url }}" class="stretched-link">
+                                    <small><strong>{{ product.brand.name }}</strong></small><br>
+                                    <small>{{ product.name }}</small>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            {% if paginator.num_pages > 1 %}
+                <nav>
+                    <div class="d-flex justify-content-between">
+                        <!-- Кнопка В НАЧАЛО -->
+                        <ul class="pagination">
+                            <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+                                <a class="page-link" href="{% if page_obj.previous_page_number != 1 %}
+                                ?{% smart_url page=page_obj.previous_page_number %}
+                                {% else %}
+                                ?{% smart_url page=1 %}
+                                {% endif %}" aria-label="Previous">
+                                    <span class="align-bottom" aria-hidden="true">&lt; Назад</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <!-- Кнопки СТРАНИЦЫ -->
+                        <ul class="pagination">
+                            {% for num in paginator_range %}
+                                {% if num == page_obj.paginator.ELLIPSIS %}
+                                    <li>
+                                        <p style="font-size: 21px;">{{ num }}</p>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item{% if num == page_obj.number %} active{% endif %}" style="margin: 0 10px;">
+                                        <a href="?{% smart_url page=num %}" class="page-link">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        <ul class="pagination">
+                            <!-- Кнопка ВПЕРЕД -->
+                            <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+                                <a class="page-link" href="{% if page_obj.next_page_number != paginator.num_pages %}
+                                ?{% smart_url page=page_obj.next_page_number %}
+                                {% else %}
+                                ?{% smart_url page=paginator.num_pages %}
+                                {% endif %}" aria-label="Next">
+                                    <span aria-hidden="true">Вперед &gt;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

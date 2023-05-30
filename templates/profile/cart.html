@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Оформление заказа - Healthy Habits{% endblock title %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}">
+{% endblock styles %}
+
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a class="link-minor" href="/">Главная</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">Корзина</a></li>
+        </ol>
+    </nav>
+    <div class="text-center" style="padding-top: 15px;">
+        <div style="padding-top: 40px; padding-bottom: 40px">
+            <strong><a style="font-size: 20px">Оформление заказа</a></strong>
+        </div>
+        <div class="text-center">
+            <table class="table table-borderless">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Наименование</th>
+                        <th scope="col">Размер</th>
+                        <th scope="col">Количество</th>
+                        <th scope="col">Цена</th>
+                        <th scope="col">Удалить</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_table %}
+                        <tr class="align-middle">
+                            <td>
+                                <a href="{{ item.productinstance.product.get_url }}">
+                                    <img src="/{{ item.productinstance.product.image }}" class="img-fluid" width="100">
+                                </a>
+                            </td>
+                            <td>{{ item.productinstance.product.name }}</td>
+                            <td>{{ item.productinstance.size.name }}</td>
+                            <td>
+                                {% if item.quantity == 0 %}
+                                    <div class="error">
+                                        <br><br>{{ item.quantity }}<br>
+                                        <a style="font-size: 13px">Товар отсутствует<br>на складе.</a>
+                                    </div>
+                                {% else %}
+                                    {{ item.quantity }}
+                                {% endif %}
+                            </td>
+                            <td>{{ item.productinstance.product.price|price_format }}</td>
+                            <td>
+                                <a class="trash-icon" href="{% url 'delete' cartitem_id=item.id %}">
+                                    <span class="bi bi-x" style="font-size:40px;"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="text-end">
+                <a>Количество товаров:&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ cart.total_quantity}}</b></a><br>
+                <a>Итого:&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ cart.total_price|price_format }}</b></a>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <form method="post" action="">
+            {% csrf_token %}
+            <div style="padding-top: 40px; padding-bottom: 20px">
+                <strong><a style="font-size: 20px">Контактные данные</a></strong>
+            </div>
+            {% for field in form %}
+                {% if field == form.city %}
+                    <div style="padding-top: 40px; padding-bottom: 20px">
+                        <strong><a style="font-size: 20px">Доставка</a></strong>
+                    </div>
+                    <div class="row text-start" style="padding-top: 20px">
+                        <div class="col"><b>{{ field.label }}</b></div>
+                        <div class="col-10">{{ field }}</div>
+                    </div>
+                {% elif field == form.payment_method %}
+                    <div class="row text-start" style="padding-top: 20px">
+                        <div class="col"><b>Стоимость доставки</b></div>
+                        <div class="col-10">
+                            {% if delivery_price == 0 %}Бесплатно{% else %}{{ delivery_price|price_format }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="row text-start" style="padding-top: 20px">
+                        <div class="col"><b>Срок доставки</b></div>
+                        <div class="col-10">{{ delivery_time }}</div>
+                    </div>
+                    <div class="row text-start" style="padding-top: 20px">
+                        <div class="col"><b>{{ field.label }}</b></div>
+                        <div class="col-10">{{ field }}</div>
+                    </div>
+                {% else %}
+                    <div class="row text-start" style="padding-top: 20px">
+                        <div class="col"><b>{{ field.label }}</b></div>
+                        <div class="col-10">{{ field }}</div>
+                    </div>
+                {% endif %}
+                {% if field.errors %}
+                    <div class="error text-center">
+                        {% for error in field.errors %}
+                            <span class="align-top">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="d-flex justify-content-between" style="padding-top: 40px;">
+                <div class="col text-start">
+                    <a>Стоимость товара:&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ cart.total_price|price_format }}</b></a><br>
+                    <a>Стоимость доставки:&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ delivery_price|price_format }}</b></a><br><br>
+                    <a>Итого к оплате:&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ final_price|price_format }}</b></a>
+                </div>
+                <div class="col-4">
+                    <div class="form-check text-start">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" checked required>
+                            Я принимаю условия публичной оферты и даю своё согласие на обработку моих персональных
+                            данных, на условиях и для целей, определенных политикой конфиденциальности
+                        </label>
+                    </div>
+                        <div class="d-grid gap-2 col-12 mx-auto" style="padding-top: 15px;">
+                            {% if cart.total_quantity == 0 %}
+                                <button type="submit" class="btn btn-dark" disabled>Отправить заказ</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-dark">Отправить заказ</button>
+                            {% endif %}
+                        </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

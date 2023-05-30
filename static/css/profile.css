@@ -1,0 +1,5 @@
+/* Стили таблицы корзины */
+.custom-table td,
+.custom-table th {
+    font-size: 12px;
+}
