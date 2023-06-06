@@ -321,6 +321,7 @@ class ProductListView(ListView):
         # генерация динамического elided_page_range
         page = context['page_obj']
         context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
+        context['common'] = 'common/pagination.html'
         return context
 
 

@@ -1,13 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-"""
-* статус заказа (OrderStatus): name
-Заказы (Order): user_id (ForeignKey), status, total_price
-Состав заказа (OrderItem): order_id (ForeignKey), productinstance_id (ForeignKey), quantity, price 
-----
-Отзывы (Review): user_id (ForeignKey), product_id (ForeignKey), text, rating, date_created
-"""
 
 # Таблица "Пользователи" (Users) <- встроенная
 # id (Primary Key), username, email, password, first_name, last_name, is_staff, is_active, date_joined
@@ -262,3 +255,22 @@ class OrderItem(models.Model):
     date_added = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     date_updated = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
     objects = models.Manager()
+
+
+# Отзывы (Review): user (ForeignKey), product (ForeignKey), text, rating, date_added, date_updated
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар')
+    text = models.CharField(verbose_name='Текст', max_length=1000)
+    rating = models.PositiveIntegerField(verbose_name='Рейтинг')
+    date_added = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    date_updated = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
+    objects = models.Manager()
+
+    def __str__(self):
+        return f'Отзыв {self.pk}'
+
+    class Meta:
+        verbose_name = 'отзыв'
+        verbose_name_plural = 'отзывы'
+

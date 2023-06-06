@@ -1,0 +1,42 @@
+<nav>
+    <div class="d-flex justify-content-between">
+        <!-- Кнопка В НАЧАЛО -->
+        <ul class="pagination">
+            <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+                <a class="page-link" href="{% if page_obj.previous_page_number != 1 %}
+                ?{% smart_url page=page_obj.previous_page_number %}
+                {% else %}
+                ?{% smart_url page=1 %}
+                {% endif %}" aria-label="Previous">
+                    <span class="align-bottom" aria-hidden="true">&lt; Назад</span>
+                </a>
+            </li>
+        </ul>
+        <!-- Кнопки СТРАНИЦЫ -->
+        <ul class="pagination">
+            {% for num in paginator_range %}
+                {% if num == page_obj.paginator.ELLIPSIS %}
+                    <li>
+                        <p style="font-size: 21px;">{{ num }}</p>
+                    </li>
+                {% else %}
+                    <li class="page-item{% if num == page_obj.number %} active{% endif %}" style="margin: 0 10px;">
+                        <a href="?{% smart_url page=num %}" class="page-link">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <ul class="pagination">
+            <!-- Кнопка ВПЕРЕД -->
+            <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+                <a class="page-link" href="{% if page_obj.next_page_number != paginator.num_pages %}
+                ?{% smart_url page=page_obj.next_page_number %}
+                {% else %}
+                ?{% smart_url page=paginator.num_pages %}
+                {% endif %}" aria-label="Next">
+                    <span aria-hidden="true">Вперед &gt;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
