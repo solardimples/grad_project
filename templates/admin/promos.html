@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Управление заказами {% if order %}(Заказ {{ order.id }}) {% endif %}- Healthy Habits
+    Управление акциями - Healthy Habits
 {% endblock title %}
 
 {% block styles %}
@@ -18,5 +18,4 @@
                href="{{ page.link }}">{{ page.title }}</a>
         {% endfor %}
     </div>
-    {% include common %}
 {% endblock content %}

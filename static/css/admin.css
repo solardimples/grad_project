@@ -1,0 +1,10 @@
+/* Стили панели управления админки */
+.btn-group {
+    display: flex !important;
+    justify-content: space-between !important;
+}
+/* Стили таблицы корзины */
+.custom-table td,
+.custom-table th {
+    font-size: 12px;
+}

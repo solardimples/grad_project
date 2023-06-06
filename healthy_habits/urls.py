@@ -25,7 +25,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),  # главная страница
     # Маршруты для работы с администрацией сайта
+    path('admin-database', views.AdminManager.admin_database, name='admin_database'),  # управление БД (админка)
+    path('admin-promos', views.AdminManager.admin_promos, name='admin_promos'),  # управление акциями (админка)
     path('admin-orders', views.AdminManager.admin_orders, name='admin_orders'),  # управление заказами (админка)
+    path('admin-users', views.AdminManager.admin_users, name='admin_users'),  # управление заказами (админка)
     # Маршруты для работы с каталогом товаров
     path('catalog', views.ProductListView.as_view(), name='catalog'),  # каталог всех товаров
     path('catalog/<str:category>', views.ProductListView.as_view(), name='category'),  # каталог категории товаров

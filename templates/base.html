@@ -53,10 +53,9 @@
                         {% if user.is_superuser %}
                             <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header">Админка</h6></li>
-                            <li><a class="dropdown-item" href="#">Акции</a></li>
-                            <li><a class="dropdown-item" href="#">База данных</a></li>
-                            <li><a class="dropdown-item" href="{% url 'admin_orders' %}">Заказы</a></li>
-                            <li><a class="dropdown-item" href="#">Пользователи</a></li>
+                            {% for page in admin_pages %}
+                                <li><a class="dropdown-item" href="{{ page.link }}">{{ page.title }}</a></li>
+                            {% endfor %}
                         {% endif %}
                     </ul>
                 {% else %}
@@ -84,9 +83,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/catalog/equipment" style="font-size: 20px"><strong>Снаряжение</strong></a>
                         </li>
-                        <!-- <li class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link" href="#" style="font-size: 20px"><strong>Блог</strong></a>
-                        </li> -->
+                        </li>
                     </ul>
                 </div>
             </div>

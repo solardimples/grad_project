@@ -19,14 +19,31 @@ def index(request):
 class AdminManager:
 
     @staticmethod
+    def admin_database(request):
+        context = {}
+        return render(request, 'admin/database.html', context)
+
+    @staticmethod
+    def admin_promos(request):
+        context = {}
+        return render(request, 'admin/promos.html', context)
+
+    @staticmethod
     def admin_orders(request):
         if not request.user.is_superuser:
-            redirect('/')
+            return redirect('/')
 
-        context = OrderManager.manage_one(request, admin=True) if request.GET.get('pk') \
-            else OrderManager.manage_multiple(request, admin=True)
+        if request.GET.get('pk'):
+            context = OrderManager.manage_one(request, admin=True)
+        else:
+            context = OrderManager.manage_multiple(request, admin=True)
 
         return render(request, 'admin/orders.html', context)
+
+    @staticmethod
+    def admin_users(request):
+        context = {}
+        return render(request, 'admin/users.html', context)
 
 
 # Класс содержит методы работы с корзиной и заказами
@@ -148,17 +165,13 @@ class OrderManager:
         """
         Метод возвращает словарь с данными о заказах
         """
-        if admin:
-            order_items = Order.objects.all()
-        else:
-            order_items = Order.objects.filter(user=request.user)
+        order_items = Order.objects.all() if admin else Order.objects.filter(user=request.user)
 
-        order_items_filtered = [
-            {'name': 'В обработке', 'items': order_items.filter(status_id=1)},
-            {'name': 'Готов к выдаче', 'items': order_items.filter(status_id=2)},
-            {'name': 'Завершен', 'items': order_items.filter(status_id=3)},
-            {'name': 'Отменен', 'items': order_items.filter(status_id=4)},
-        ]
+        order_items_filtered = []
+        for status in OrderStatus.objects.all():
+            order_items_filtered.append(
+                {'name': status.name.capitalize(), 'items': order_items.filter(status_id=status.id)}
+            )
 
         order_item_items = {}
         for item in order_items:

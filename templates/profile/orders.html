@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    {% if order %}Данные о заказе {{ order.id }}{% else %}Заказы{% endif %} - Healthy Habits
+    Мои заказы {% if order %}(Заказ {{ order.id }}) {% endif %}- Healthy Habits
 {% endblock title %}
 
 {% block styles %}
@@ -11,16 +11,15 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}">
 {% endblock styles %}
 
-
 {% block content %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a class="link-minor" href="/">Главная</a></li>
             {% if order %}
-                <li class="breadcrumb-item active"><a class="link-minor" href="orders">Заказы</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">Данные о заказе {{ order.id }}</a></li>
+                <li class="breadcrumb-item active"><a class="link-minor" href="orders">Мои заказы</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">Заказ {{ order.id }}</a></li>
             {% else %}
-                <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">Заказы</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">Мои заказы</a></li>
             {% endif %}
         </ol>
     </nav>

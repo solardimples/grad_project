@@ -1,8 +1,15 @@
 from .models import Cart, ProductInstance
 
+context = {'admin_pages': [
+    {'title': 'Акции', 'link': '/admin-promos'},
+    {'title': 'База данных', 'link': '/admin-database'},
+    {'title': 'Заказы', 'link': '/admin-orders'},
+    {'title': 'Пользователи', 'link': '/admin-users'},
+]}
+
 
 def create_cart_table(request):
-    context = {}
+    global context
 
     if not request.user.is_authenticated:
         context['unauthenticated'] = True
@@ -31,5 +38,4 @@ def create_cart_table(request):
             context['cart_table'] = cart_items if cart_items else False
         except Cart.DoesNotExist:
             context['cart_table'] = False
-
     return context
