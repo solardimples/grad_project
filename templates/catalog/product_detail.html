@@ -45,12 +45,6 @@
                         моменту публикации сведениях.</p>
                 </div>
             </div>
-            <!-- Отзывы -->
-            <div class="row">
-                <div class="p-3" style="margin-top: 30px;">
-                    <p class="lead">Отзывы</p>
-                </div>
-            </div>
             <!-- Форма отзыва -->
             <div class="row">
                 <div class="p-3" style="margin-top: 30px;">
@@ -58,6 +52,16 @@
                     {{ review_form }}
                 </div>
             </div>
+            <!-- Отзывы -->
+            <div class="row">
+                <div class="p-3" style="margin-top: 30px;">
+                    <p class="lead">Отзывы</p>
+                </div>
+            </div>
+            {% if reviews %}
+            {% else %}
+                <p>Нет отзывов</p>
+            {% endif %}
         </div>
         <div class="col-1"></div>
         <!-- Бренд, цена + форма с размерами и добавлением в корзину -->
