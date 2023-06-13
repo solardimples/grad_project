@@ -16,37 +16,78 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
-class AdminManager:
+# Класс обрабатывает работу с каталогом товаров (шаблон "product_list.html", ключ "product_list")
+class ProductListView(ListView):
+    model = Product
+    paginate_by = 12
+    form_class = ProductFilterForm
 
-    @staticmethod
-    def admin_database(request):
-        context = {}
-        return render(request, 'admin/database.html', context)
+    def get_queryset(self):
+        """
+        Метод генерирует список товаров в зависимости от предоставленных фильтров
+        """
+        queryset = super().get_queryset()
+        category = self.kwargs.get('category')
+        gender = self.request.GET.getlist('gender')
+        brand = self.request.GET.getlist('brand')
 
-    @staticmethod
-    def admin_promos(request):
-        context = {}
-        return render(request, 'admin/promos.html', context)
+        queryset = queryset.filter(category=Product.get_category(category=category, pk=True)) if category else queryset
+        queryset = queryset.filter(gender__in=gender) if gender else queryset
+        queryset = queryset.filter(brand__in=brand) if brand else queryset
 
-    @staticmethod
-    def admin_orders(request):
-        if not request.user.is_superuser:
-            return redirect('/')
+        return queryset.order_by('-date_added')
 
-        if request.GET.get('pk'):
-            context = OrderManager.manage_one(request, admin=True)
+    def get_context_data(self, **kwargs):
+        """
+        Метод генерирует переменные для контекста страницы
+        """
+        context = super().get_context_data(**kwargs)
+        # генерация названия категории на странице
+        category = self.kwargs.get('category')
+        context['category'] = Product.get_category(category=category)
+        context['category'] = 'Каталог' if not context['category'] else context['category']
+        # генерация формы фильтрации товаров
+        selected_pks = list(map(str, self.get_queryset().values_list('pk', flat=True)))  # список ключей товаров
+        selected_gender = self.request.GET.getlist('gender')  # список выбранных фильтров пола
+        selected_brand = self.request.GET.getlist('brand')  # список выбранных фильтров бренда
+        context['form'] = ProductFilterForm(
+            selected_pks=selected_pks, selected_gender=selected_gender, selected_brand=selected_brand
+        )
+        # генерация динамического elided_page_range
+        page = context['page_obj']
+        context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
+        context['common'] = 'common/pagination.html'
+        return context
+
+
+# Класс обрабатывает работу со страницей конкретного товара (шаблон "product_detail.html", ключ "product")
+class ProductDetailView(DetailView):
+    model = Product
+    form_class = ProductCartForm
+
+    def get_context_data(self, **kwargs):
+        """
+        Метод генерирует переменные для контекста страницы
+        """
+        context = super().get_context_data(**kwargs)
+        # генерация названия категории на странице
+        category = self.kwargs.get('category')
+        pk = self.kwargs.get('pk')
+        context['pk'] = pk
+        context['category'] = Product.get_category(category=category)
+        context['category_link'] = f'/catalog/{category}'
+        # генерация формы с размерами конкретного товара
+        instance_objects = ProductInstance.objects.filter(product_id=pk, status_id=1)
+        if instance_objects:
+            context['form'] = ProductCartForm(instance_objects=instance_objects)
         else:
-            context = OrderManager.manage_multiple(request, admin=True)
-
-        return render(request, 'admin/orders.html', context)
-
-    @staticmethod
-    def admin_users(request):
-        context = {}
-        return render(request, 'admin/users.html', context)
+            context['sold_out'] = 'Товар отсутствует на складе.'
+        # генерация формы отзыва
+        context['review_form'] = ReviewForm()
+        return context
 
 
-# Класс содержит методы работы с корзиной и заказами
+# Класс содержит методы для работы с корзиной и заказами
 class OrderManager:
 
     @staticmethod
@@ -236,6 +277,37 @@ class OrderManager:
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
+# Класс содержит методы для администрации сайта
+class AdminManager:
+
+    @staticmethod
+    def admin_database(request):
+        context = {}
+        return render(request, 'admin/database.html', context)
+
+    @staticmethod
+    def admin_promos(request):
+        context = {}
+        return render(request, 'admin/promos.html', context)
+
+    @staticmethod
+    def admin_orders(request):
+        if not request.user.is_superuser:
+            return redirect('/')
+
+        if request.GET.get('pk'):
+            context = OrderManager.manage_one(request, admin=True)
+        else:
+            context = OrderManager.manage_multiple(request, admin=True)
+
+        return render(request, 'admin/orders.html', context)
+
+    @staticmethod
+    def admin_users(request):
+        context = {}
+        return render(request, 'admin/users.html', context)
+
+
 # Класс содержит методы для работы с аккаунтами пользователей
 class UserManager:
 
@@ -281,72 +353,3 @@ class UserManager:
         return render(request, 'registration/register.html', context=context)
 
 
-# Класс обрабатывает работу с каталогом товаров (шаблон "product_list.html", ключ "product_list")
-class ProductListView(ListView):
-    model = Product
-    paginate_by = 12
-    form_class = ProductFilterForm
-
-    def get_queryset(self):
-        """
-        Метод генерирует список товаров в зависимости от предоставленных фильтров
-        """
-        queryset = super().get_queryset()
-        category = self.kwargs.get('category')
-        gender = self.request.GET.getlist('gender')
-        brand = self.request.GET.getlist('brand')
-
-        queryset = queryset.filter(category=Product.get_category(category=category, pk=True)) if category else queryset
-        queryset = queryset.filter(gender__in=gender) if gender else queryset
-        queryset = queryset.filter(brand__in=brand) if brand else queryset
-
-        return queryset.order_by('-date_added')
-
-    def get_context_data(self, **kwargs):
-        """
-        Метод генерирует переменные для контекста страницы
-        """
-        context = super().get_context_data(**kwargs)
-        # генерация названия категории на странице
-        category = self.kwargs.get('category')
-        context['category'] = Product.get_category(category=category)
-        context['category'] = 'Каталог' if not context['category'] else context['category']
-        # генерация формы фильтрации товаров
-        selected_pks = list(map(str, self.get_queryset().values_list('pk', flat=True)))  # список ключей товаров
-        selected_gender = self.request.GET.getlist('gender')  # список выбранных фильтров пола
-        selected_brand = self.request.GET.getlist('brand')  # список выбранных фильтров бренда
-        context['form'] = ProductFilterForm(
-            selected_pks=selected_pks, selected_gender=selected_gender, selected_brand=selected_brand
-        )
-        # генерация динамического elided_page_range
-        page = context['page_obj']
-        context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
-        context['common'] = 'common/pagination.html'
-        return context
-
-
-# Класс обрабатывает работу со страницей конкретного товара (шаблон "product_detail.html", ключ "product")
-class ProductDetailView(DetailView):
-    model = Product
-    form_class = ProductCartForm
-
-    def get_context_data(self, **kwargs):
-        """
-        Метод генерирует переменные для контекста страницы
-        """
-        context = super().get_context_data(**kwargs)
-        # генерация названия категории на странице
-        category = self.kwargs.get('category')
-        pk = self.kwargs.get('pk')
-        context['pk'] = pk
-        context['category'] = Product.get_category(category=category)
-        context['category_link'] = f'/catalog/{category}'
-        # генерация формы с размерами конкретного товара
-        instance_objects = ProductInstance.objects.filter(product_id=pk, status_id=1)
-        if instance_objects:
-            context['form'] = ProductCartForm(instance_objects=instance_objects)
-        else:
-            context['sold_out'] = 'Товар отсутствует на складе.'
-        # генерация формы отзыва
-        context['review_form'] = ReviewForm()
-        return context
