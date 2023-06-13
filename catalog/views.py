@@ -347,4 +347,6 @@ class ProductDetailView(DetailView):
             context['form'] = ProductCartForm(instance_objects=instance_objects)
         else:
             context['sold_out'] = 'Товар отсутствует на складе.'
+        # генерация формы отзыва
+        context['review_form'] = ReviewForm()
         return context
