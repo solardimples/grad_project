@@ -5,6 +5,7 @@ from django.contrib.auth import login, authenticate
 from .forms import *
 
 
+# Функция обрабатывает содержимое главной страницы
 def index(request):
     """
     Функция обрабатывает отображение главной страницы
@@ -353,3 +354,15 @@ class UserManager:
         return render(request, 'registration/register.html', context=context)
 
 
+class ReviewManager:
+    @staticmethod
+    def add(request):
+        pass
+
+    @staticmethod
+    def delete(request):
+        pass
+
+    @staticmethod
+    def get(request):
+        pass

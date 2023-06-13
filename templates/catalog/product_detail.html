@@ -52,10 +52,13 @@
                     <form method="post" action="">
                         {% csrf_token %}
                         <div>
-                            {{ review_form.as_p }}
+                            {{ review_form.text }}
                         </div>
-                        <div>
-                            <button type="submit" class="btn btn-dark">Отправить</button>
+                        <div class="row align-self-end">
+                            <div class="col">{{ review_form.rating }}</div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-outline-dark">Отправить</button>
+                            </div>
                         </div>
                     </form>
                 </div>

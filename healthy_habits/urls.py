@@ -49,5 +49,8 @@ urlpatterns = [
     path('accounts/password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
         template_name='registration/password_reset_confirm.html',
         form_class=CustomSetPasswordForm), name='password_reset_confirm'),  # сброс пароля
+    # Маршруты для работы с отзывами
+    path('add/<int:review_id>', views.ReviewManager.add, name='add_review'),  # добавить отзыв
+    path('delete/<int:review_id>', views.ReviewManager.delete, name='delete_review'),  # удалить отзыв
 ]
 
