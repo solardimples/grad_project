@@ -85,6 +85,8 @@ class ProductDetailView(DetailView):
             context['sold_out'] = 'Товар отсутствует на складе.'
         # генерация формы отзыва
         context['review_form'] = ReviewForm()
+        # генерация отзывов
+        context['reviews'] = Product.objects.get(id=pk).review_set.all()
         return context
 
 
@@ -356,8 +358,14 @@ class UserManager:
 
 class ReviewManager:
     @staticmethod
-    def add(request):
-        pass
+    def add(request, product_id):
+        form = ReviewForm(data=request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            data['product'] = Product.objects.get(id=product_id)
+            data['user'] = request.user
+            Review.objects.create(**data)
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
     @staticmethod
     def delete(request):
