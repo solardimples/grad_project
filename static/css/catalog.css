@@ -1,4 +1,30 @@
-/* Стили для фильтров на странице каталога */
+.rating{
+  display : flex;
+}
+
+.rating input{
+  position : absolute;
+  left     : -100vw;
+}
+
+.rating label{
+  width      : 48px;
+  height     : 48px;
+  padding    : 48px 0 0;
+  overflow   : hidden;
+  background : url('stars.svg') no-repeat top left;
+}
+
+.rating:not(:hover) input:indeterminate + label,
+.rating:not(:hover) input:checked ~ input + label,
+.rating input:hover ~ input + label{
+  background-position : -48px 0;
+}
+
+.rating:not(:hover) input:focus-visible + label{
+  background-position : -96px 0;
+}
+
 button.accordion-button {
     background-color: #fff !important;
     color: #000 !important;
@@ -60,11 +86,11 @@ button.accordion-button:focus {
     max-width: 100%;
 }
 /* Стиль радиокнопок  */
-input[type="radio"] {
+.size-options input[type="radio"] {
     display: grid;
     place-content: center;
 }
-input[type="radio"]::before {
+.size-options input[type="radio"]::before {
     content: "";
     width: 0.65em;
     height: 0.65em;
@@ -75,10 +101,10 @@ input[type="radio"]::before {
     /* Windows High Contrast Mode */
     background-color: #fedb34;
 }
-input[type="radio"]:checked::before {
+.size-options input[type="radio"]:checked::before {
     transform: scale(1);
 }
-input[type="radio"]:focus {
+.size-options input[type="radio"]:focus {
     outline: max(2px, 0.15em) #fedb34;
     outline-offset: max(2px, 0.15em);
 }

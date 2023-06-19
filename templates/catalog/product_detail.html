@@ -55,7 +55,13 @@
                             {{ review_form.text }}
                         </div>
                         <div class="row align-self-end">
-                            <div class="col">{{ review_form.rating }}</div>
+                            <div class="col">
+                                {% for choice in review_form.rating %}
+                                    <div class="rating form-check form-check-inline">
+                                        {{ choice }}
+                                    </div>
+                                {% endfor %}
+                            </div>
                             <div class="col">
                                 <button type="submit" class="btn btn-outline-dark">Отправить</button>
                             </div>
@@ -97,7 +103,7 @@
             {% if form %}
                 <form method="post" action="{% url 'add' product_id=pk %}">
                     {% csrf_token %}
-                    <div style="padding-top: 30px; padding-bottom: 20px;">
+                    <div class="size-options" style="padding-top: 30px; padding-bottom: 20px;">
                         {% for field in form %}
                             {% for choice in field %}
                                 <div class="form-check form-check-inline">

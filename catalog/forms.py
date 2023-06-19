@@ -5,15 +5,6 @@ from django.contrib.auth.password_validation import validate_password
 from .models import *
 
 
-class ReviewForm(forms.Form):
-    text = forms.CharField(label='Текст', max_length=1000, required=True, widget=forms.Textarea(
-        attrs={'class': 'form-control'}))
-
-    choices = ((0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5))
-    rating = forms.ChoiceField(label='Рейтинг', choices=choices, required=True, widget=forms.Select(
-        attrs={'class': 'form-control'}))
-
-
 # first_name, last_name, phone_number, city, delivery_method, address, payment_method, comment
 class OrderDetails(forms.Form):
 
@@ -250,3 +241,13 @@ class ProductCartForm(forms.Form):
                 self.fields['size'].choices = sorted_choices
             else:
                 self.fields['size'].required = False
+
+
+class ReviewForm(forms.Form):
+    text = forms.CharField(label='Текст', max_length=1000, required=True, widget=forms.Textarea(
+        attrs={'class': 'form-control'}))
+
+    choices = ((1, 1), (2, 2), (3, 3), (4, 4), (5, 5))
+    rating = forms.ChoiceField(label='Рейтинг', choices=choices, required=True, widget=forms.RadioSelect(
+        attrs={'class': 'form-check-input', 'type': 'radio', 'name': 'rating'}
+    ))
