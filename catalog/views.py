@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import ListView, DetailView
@@ -73,12 +74,11 @@ class ProductDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         # генерация названия категории на странице
         category = self.kwargs.get('category')
-        pk = self.kwargs.get('pk')
-        context['pk'] = pk
+        context['pk'] = self.kwargs.get('pk')
         context['category'] = Product.get_category(category=category)
         context['category_link'] = f'/catalog/{category}'
         # генерация формы с размерами конкретного товара
-        instance_objects = ProductInstance.objects.filter(product_id=pk, status_id=1)
+        instance_objects = ProductInstance.objects.filter(product_id=self.kwargs.get('pk'), status_id=1)
         if instance_objects:
             context['form'] = ProductCartForm(instance_objects=instance_objects)
         else:
@@ -86,8 +86,21 @@ class ProductDetailView(DetailView):
         # генерация формы отзыва
         context['review_form'] = ReviewForm()
         # генерация отзывов
-        context['reviews'] = Product.objects.get(id=pk).review_set.all()
+        # context['reviews'] = self.get_reviews()
+
+        reviews = self.get_reviews()
+        context['reviews'] = reviews
+        context['page_obj'] = reviews
+        page = context['page_obj']
+        context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
         return context
+
+    def get_reviews(self):
+        queryset = Product.objects.get(id=self.kwargs.get('pk')).review_set.all()
+        paginator = Paginator(queryset, 2)  # paginate_by
+        page = self.request.GET.get('page')
+        reviews = paginator.get_page(page)
+        return reviews
 
 
 # Класс содержит методы для работы с корзиной и заказами
