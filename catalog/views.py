@@ -58,7 +58,6 @@ class ProductListView(ListView):
         # генерация динамического elided_page_range
         page = context['page_obj']
         context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
-        context['common'] = 'common/pagination.html'
         return context
 
 
@@ -86,16 +85,18 @@ class ProductDetailView(DetailView):
         # генерация формы отзыва
         context['review_form'] = ReviewForm()
         # генерация отзывов
-        context = self.create_review_section(context=context)
+        paginator, page_obj, paginator_range = self.review_pagination()
+        context['paginator'] = paginator
+        context['reviews'] = context['page_obj'] = page_obj
+        context['paginator_range'] = paginator_range
         return context
 
-    def create_review_section(self, context):
+    def review_pagination(self):
         queryset = Product.objects.get(id=self.kwargs.get('pk')).review_set.all()
         paginator = Paginator(queryset, 2)  # paginate_by
-        page = paginator.get_page(self.request.GET.get('page'))
-        context['reviews'] = context['page_obj'] = page
-        context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
-        return context
+        page_obj = paginator.get_page(self.request.GET.get('page'))
+        paginator_range = page_obj.paginator.get_elided_page_range(number=page_obj.number, on_each_side=2, on_ends=1)
+        return paginator, page_obj, paginator_range
 
 
 # Класс содержит методы для работы с корзиной и заказами

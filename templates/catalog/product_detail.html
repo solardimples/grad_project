@@ -77,7 +77,9 @@
                         <p>{{ review.rating }}</p>
                     </div>
                 {% endfor %}
-                {% include "common/pagination.html" %}
+                {% if paginator.num_pages > 1 %}
+                    {% include "common/pagination.html" %}
+                {% endif %}
             {% else %}
                 <p>Нет отзывов</p>
             {% endif %}
