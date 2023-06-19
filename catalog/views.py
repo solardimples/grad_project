@@ -86,21 +86,16 @@ class ProductDetailView(DetailView):
         # генерация формы отзыва
         context['review_form'] = ReviewForm()
         # генерация отзывов
-        # context['reviews'] = self.get_reviews()
-
-        reviews = self.get_reviews()
-        context['reviews'] = reviews
-        context['page_obj'] = reviews
-        page = context['page_obj']
-        context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
+        context = self.create_review_section(context=context)
         return context
 
-    def get_reviews(self):
+    def create_review_section(self, context):
         queryset = Product.objects.get(id=self.kwargs.get('pk')).review_set.all()
         paginator = Paginator(queryset, 2)  # paginate_by
-        page = self.request.GET.get('page')
-        reviews = paginator.get_page(page)
-        return reviews
+        page = paginator.get_page(self.request.GET.get('page'))
+        context['reviews'] = context['page_obj'] = page
+        context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
+        return context
 
 
 # Класс содержит методы для работы с корзиной и заказами
