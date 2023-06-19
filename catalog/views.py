@@ -92,6 +92,9 @@ class ProductDetailView(DetailView):
         return context
 
     def review_pagination(self):
+        """
+        Метод генерирует объекты пагинации отзывов для страницы
+        """
         queryset = Product.objects.get(id=self.kwargs.get('pk')).review_set.all()
         paginator = Paginator(queryset, 2)  # paginate_by
         page_obj = paginator.get_page(self.request.GET.get('page'))
