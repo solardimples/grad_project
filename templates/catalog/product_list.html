@@ -15,10 +15,12 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a class="link-minor" href="/">Главная</a></li>
-            {% if not category == 'Каталог' %}
+            {% if category %}
                 <li class="breadcrumb-item"><a class="link-minor" href="{% url 'catalog' %}">Каталог</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">{{ category }}</a></li>
+            {% else %}
+                <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">Каталог</a></li>
             {% endif %}
-            <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">{{ category }}</a></li>
         </ol>
     </nav>
     <div class="row">

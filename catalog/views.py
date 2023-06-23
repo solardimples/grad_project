@@ -45,9 +45,7 @@ class ProductListView(ListView):
         """
         context = super().get_context_data(**kwargs)
         # генерация названия категории на странице
-        category = self.kwargs.get('category')
-        context['category'] = Product.get_category(category=category)
-        context['category'] = 'Каталог' if not context['category'] else context['category']
+        context['category'] = Product.get_category(category=self.kwargs.get('category'))
         # генерация формы фильтрации товаров
         selected_pks = list(map(str, self.get_queryset().values_list('pk', flat=True)))  # список ключей товаров
         selected_gender = self.request.GET.getlist('gender')  # список выбранных фильтров пола
@@ -59,6 +57,12 @@ class ProductListView(ListView):
         page = context['page_obj']
         context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
         return context
+
+    def add_filters(self):
+        selected_pks = list(map(str, self.get_queryset().values_list('pk', flat=True)))  # список ключей товаров
+        selected_gender = self.request.GET.getlist('gender')  # список выбранных фильтров пола
+        selected_brand = self.request.GET.getlist('brand')  # список выбранных фильтров бренда
+        return selected_pks, selected_gender, selected_brand
 
 
 # Класс обрабатывает работу со страницей конкретного товара (шаблон "product_detail.html", ключ "product")
