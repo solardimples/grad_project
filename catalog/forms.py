@@ -204,15 +204,15 @@ class ProductFilterForm(forms.Form):
         label='Бренд', choices=[],
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input', 'type': 'checkbox'}), required=False)
 
-    def __init__(self, selected_gender=None, selected_brand=None, selected_pks=None, *args, **kwargs):
+    def __init__(self, data, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if selected_gender:
-            self.fields['gender'].initial = selected_gender
-        if selected_brand:
-            self.fields['brand'].initial = selected_brand
+        if data['selected_gender']:
+            self.fields['gender'].initial = data['selected_gender']
+        if data['selected_brand']:
+            self.fields['brand'].initial = data['selected_brand']
 
-        if selected_pks:
-            queryset = Product.objects.filter(pk__in=selected_pks)
+        if data['selected_pks']:
+            queryset = Product.objects.filter(pk__in=data['selected_pks'])
             gender_objects = Gender.objects.filter(product__in=queryset).distinct()
             brand_objects = Brand.objects.filter(product__in=queryset).distinct()
 

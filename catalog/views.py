@@ -47,22 +47,19 @@ class ProductListView(ListView):
         # генерация названия категории на странице
         context['category'] = Product.get_category(category=self.kwargs.get('category'))
         # генерация формы фильтрации товаров
-        selected_pks = list(map(str, self.get_queryset().values_list('pk', flat=True)))  # список ключей товаров
-        selected_gender = self.request.GET.getlist('gender')  # список выбранных фильтров пола
-        selected_brand = self.request.GET.getlist('brand')  # список выбранных фильтров бренда
-        context['form'] = ProductFilterForm(
-            selected_pks=selected_pks, selected_gender=selected_gender, selected_brand=selected_brand
-        )
+        context['form'] = ProductFilterForm(self.add_filters())
         # генерация динамического elided_page_range
-        page = context['page_obj']
-        context['paginator_range'] = page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
+        context['paginator_range'] = context['page_obj'].paginator.get_elided_page_range(
+            number=context['page_obj'].number, on_each_side=2, on_ends=1
+        )
         return context
 
     def add_filters(self):
-        selected_pks = list(map(str, self.get_queryset().values_list('pk', flat=True)))  # список ключей товаров
-        selected_gender = self.request.GET.getlist('gender')  # список выбранных фильтров пола
-        selected_brand = self.request.GET.getlist('brand')  # список выбранных фильтров бренда
-        return selected_pks, selected_gender, selected_brand
+        return {
+            'selected_pks': list(map(str, self.get_queryset().values_list('pk', flat=True))),  # список ключей товаров
+            'selected_gender': self.request.GET.getlist('gender'),  # список выбранных фильтров пола
+            'selected_brand': self.request.GET.getlist('brand')  # список выбранных фильтров бренда
+        }
 
 
 # Класс обрабатывает работу со страницей конкретного товара (шаблон "product_detail.html", ключ "product")
