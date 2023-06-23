@@ -17,10 +17,11 @@
             <li class="breadcrumb-item"><a class="link-minor" href="/">Главная</a></li>
             {% if category %}
                 <li class="breadcrumb-item"><a class="link-minor" href="{% url 'catalog' %}">Каталог</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">{{ category }}</a></li>
-            {% else %}
-                <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">Каталог</a></li>
             {% endif %}
+            <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">
+                {% if category %}{{ category }}
+                {% else %}Каталог{% endif %}
+            </a></li>
         </ol>
     </nav>
     <div class="row">
