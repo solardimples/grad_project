@@ -31,8 +31,8 @@ class ProductListView(ListView):
         queryset = super().get_queryset()
 
         filter_values = self.get_filters(**{'pk': True})
-
         filter_params = {'category': 'category', 'selected_gender': 'gender__in', 'selected_brand': 'brand__in'}
+
         for k, v in filter_values.items():
             if v:
                 queryset = queryset.filter(**{filter_params[k]: v})
