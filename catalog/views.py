@@ -29,13 +29,13 @@ class ProductListView(ListView):
         Метод генерирует список товаров в зависимости от предоставленных фильтров
         """
         queryset = super().get_queryset()
-        category = self.kwargs.get('category')
-        gender = self.request.GET.getlist('gender')
-        brand = self.request.GET.getlist('brand')
 
-        queryset = queryset.filter(category=Product.get_category(category=category, pk=True)) if category else queryset
-        queryset = queryset.filter(gender__in=gender) if gender else queryset
-        queryset = queryset.filter(brand__in=brand) if brand else queryset
+        filter_values = self.get_filters(**{'pk': True})
+
+        filter_params = {'category': 'category', 'selected_gender': 'gender__in', 'selected_brand': 'brand__in'}
+        for k, v in filter_values.items():
+            if v:
+                queryset = queryset.filter(**{filter_params[k]: v})
 
         return queryset.order_by('-date_added')
 
@@ -44,19 +44,21 @@ class ProductListView(ListView):
         Метод генерирует переменные для контекста страницы
         """
         context = super().get_context_data(**kwargs)
+        filters = self.get_filters(pks=True)
         # генерация названия категории на странице
-        context['category'] = Product.get_category(category=self.kwargs.get('category'))
+        context['category'] = filters['category']
         # генерация формы фильтрации товаров
-        context['form'] = ProductFilterForm(self.add_filters())
+        context['form'] = ProductFilterForm(filters)
         # генерация динамического elided_page_range
         context['paginator_range'] = context['page_obj'].paginator.get_elided_page_range(
             number=context['page_obj'].number, on_each_side=2, on_ends=1
         )
         return context
 
-    def add_filters(self):
+    def get_filters(self, pks=False, **kwargs):
         return {
-            'selected_pks': list(map(str, self.get_queryset().values_list('pk', flat=True))),  # список ключей товаров
+            'category': Product.get_category(category=self.kwargs.get('category'), **kwargs),
+            'selected_pks': list(map(str, self.get_queryset().values_list('pk', flat=True))) if pks is True else None,
             'selected_gender': self.request.GET.getlist('gender'),  # список выбранных фильтров пола
             'selected_brand': self.request.GET.getlist('brand')  # список выбранных фильтров бренда
         }
