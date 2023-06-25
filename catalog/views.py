@@ -30,9 +30,9 @@ class ProductListView(ListView):
         queryset = super().get_queryset()
         filter_values = self.get_filters(no_pks=True, **{'pk': True})
 
-        for k, v in filter_values.items():
-            if v:
-                queryset = queryset.filter(**{k: v})
+        for key, value in filter_values.items():
+            if value:
+                queryset = queryset.filter(**{key: value})
 
         return queryset.order_by('-date_added')
 
@@ -62,7 +62,7 @@ class ProductListView(ListView):
         if no_pks:
             filter_values.update({key + '__in': self.request.GET.getlist(key) for key in add_keys})
         else:
-            filter_values['selected_pks'] = list(map(str, self.get_queryset().values_list('pk', flat=True)))
+            filter_values.update({'selected_pks': list(map(str, self.get_queryset().values_list('pk', flat=True)))})
             filter_values.update({'selected_' + key: self.request.GET.getlist(key) for key in add_keys})
 
         return filter_values
@@ -71,7 +71,6 @@ class ProductListView(ListView):
 # Класс обрабатывает работу со страницей конкретного товара (шаблон "product_detail.html", ключ "product")
 class ProductDetailView(DetailView):
     model = Product
-    form_class = ProductCartForm
 
     def get_context_data(self, **kwargs):
         """
