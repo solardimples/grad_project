@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 # *категория (Category): name
 class Category(models.Model):
     name = models.CharField(verbose_name='Название', max_length=50)
+    add_name = models.CharField(verbose_name='Доп название', max_length=50, null=True, blank=True)
     objects = models.Manager()
 
     def __str__(self):
@@ -66,22 +67,11 @@ class Product(models.Model):
     date_updated = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
     objects = models.Manager()
 
-    @staticmethod
-    def get_category(category, ru_keys=False, pk=False):
-        """
-        Метод возвращает категорию на русском, английском или в виде id
-        """
-        data = {'en': ('wear', 'shoes', 'equipment'), 'ru': ('Одежда', 'Обувь', 'Снаряжение'), 'pk': (1, 2, 3)}
-        keys = data['ru'] if ru_keys else data['en']
-        values = data['pk'] if pk else data['en'] if ru_keys else data['ru']
-        dct = {k: v for k, v in zip(keys, values)}
-        return dct.get(category)
-
     def get_url(self):
         """
         Метод возвращает абсолютную ссылку на товар
         """
-        return f'/catalog/{self.get_category(category=str(self.category), ru_keys=True)}/{self.pk}'
+        return f'/catalog/{self.category.add_name}/{self.pk}'
 
     def __str__(self):
         return self.name

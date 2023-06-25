@@ -28,7 +28,7 @@ class ProductListView(ListView):
         Метод генерирует список товаров в зависимости от предоставленных фильтров
         """
         queryset = super().get_queryset()
-        filter_values = self.get_filter_values(no_pks=True, **{'pk': True})
+        filter_values = self.get_filter_values(no_pks=True)
 
         for key, value in filter_values.items():
             if value:
@@ -49,11 +49,12 @@ class ProductListView(ListView):
         )  # генерация динамического elided_page_range
         return context
 
-    def get_filter_values(self, no_pks=False, **kwargs):
+    def get_filter_values(self, no_pks=False):
         """
         Метод возвращает примененные к списку товаров фильтры
         """
-        filter_values = {'category': Product.get_category(category=self.kwargs.get('category'), **kwargs)}
+        category = Category.objects.filter(add_name=self.kwargs.get('category'))
+        filter_values = {'category': category[0] if category else None}
         add_keys = ['gender', 'brand']
 
         if no_pks:
@@ -74,7 +75,6 @@ class ProductDetailView(DetailView):
         Метод генерирует переменные для контекста страницы
         """
         context = super().get_context_data(**kwargs)
-        context['category_link'] = f'/catalog/{self.kwargs.get("category")}'  # генерация ссылки на категорию
         context.update(self.generate_form_context())  # генерация формы добавления товара в корзину
         context.update(self.generate_review_context())  # генерация формы отзыва и отзывов
         return context

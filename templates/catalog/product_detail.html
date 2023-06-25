@@ -15,7 +15,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a class="link-minor" href="/">Главная</a></li>
             <li class="breadcrumb-item"><a class="link-minor" href="{% url 'catalog' %}">Каталог</a></li>
-            <li class="breadcrumb-item"><a href="{{ category_link }}" class="link-minor">{{ product.category }}</a></li>
+            <li class="breadcrumb-item"><a href="/catalog/{{ product.category.add_name }}" class="link-minor">{{ product.category.name }}</a></li>
             <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">{{ product.name }}</a></li>
         </ol>
     </nav>
