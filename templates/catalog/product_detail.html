@@ -15,7 +15,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a class="link-minor" href="/">Главная</a></li>
             <li class="breadcrumb-item"><a class="link-minor" href="{% url 'catalog' %}">Каталог</a></li>
-            <li class="breadcrumb-item"><a href="{{ category_link }}" class="link-minor">{{ category }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ category_link }}" class="link-minor">{{ product.category }}</a></li>
             <li class="breadcrumb-item active" aria-current="page"><a class="text-minor">{{ product.name }}</a></li>
         </ol>
     </nav>
@@ -49,7 +49,7 @@
             <div class="row">
                 <div class="p-3">
                     <p class="lead">Оставить отзыв</p>
-                    <form method="post" action="{% url 'add_review' product_id=pk %}">
+                    <form method="post" action="{% url 'add_review' product_id=product.pk %}">
                         {% csrf_token %}
                         <div>
                             {{ review_form.text }}
@@ -101,7 +101,7 @@
             </div>
             <a style="font-size: 25px;"><strong>{{ product.price|price_format }}</strong></a>
             {% if form %}
-                <form method="post" action="{% url 'add' product_id=pk %}">
+                <form method="post" action="{% url 'add' product_id=product.pk %}">
                     {% csrf_token %}
                     <div class="size-options" style="padding-top: 30px; padding-bottom: 20px;">
                         {% for field in form %}

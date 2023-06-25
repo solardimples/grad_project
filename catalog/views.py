@@ -77,35 +77,29 @@ class ProductDetailView(DetailView):
         Метод генерирует переменные для контекста страницы
         """
         context = super().get_context_data(**kwargs)
-        # генерация названия категории на странице
-        category = self.kwargs.get('category')
-        context['pk'] = self.kwargs.get('pk')
-        context['category'] = Product.get_category(category=category)
-        context['category_link'] = f'/catalog/{category}'
-        # генерация формы с размерами конкретного товара
-        instance_objects = ProductInstance.objects.filter(product_id=self.kwargs.get('pk'), status_id=1)
-        if instance_objects:
-            context['form'] = ProductCartForm(instance_objects=instance_objects)
-        else:
-            context['sold_out'] = 'Товар отсутствует на складе.'
-        # генерация формы отзыва
-        context['review_form'] = ReviewForm()
-        # генерация отзывов
-        paginator, page_obj, paginator_range = self.review_pagination()
-        context['paginator'] = paginator
-        context['reviews'] = context['page_obj'] = page_obj
-        context['paginator_range'] = paginator_range
+        context['category_link'] = f'/catalog/{self.kwargs.get("category")}'  # генерация ссылки на категорию
+        context.update(self.generate_form_context())  # генерация формы добавления товара в корзину
+        context.update(self.generate_review_context())  # генерация формы отзыва и отзывов
         return context
 
-    def review_pagination(self):
-        """
-        Метод генерирует объекты пагинации отзывов для страницы
-        """
+    def generate_form_context(self):
+        instance_objects = ProductInstance.objects.filter(product_id=self.kwargs.get('pk'), status_id=1)
+        if instance_objects:
+            return {'form': ProductCartForm(instance_objects=instance_objects)}
+        else:
+            return {'sold_out': 'Товар отсутствует на складе.'}
+
+    def generate_review_context(self):
         queryset = Product.objects.get(id=self.kwargs.get('pk')).review_set.all()
         paginator = Paginator(queryset, 2)  # paginate_by
-        page_obj = paginator.get_page(self.request.GET.get('page'))
-        paginator_range = page_obj.paginator.get_elided_page_range(number=page_obj.number, on_each_side=2, on_ends=1)
-        return paginator, page_obj, paginator_range
+        page = paginator.get_page(self.request.GET.get('page'))
+        return {
+            'review_form': ReviewForm(),
+            'paginator': paginator,
+            'reviews': page,
+            'page_obj': page,
+            'paginator_range': page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
+        }
 
 
 # Класс содержит методы для работы с корзиной и заказами
