@@ -42,7 +42,7 @@ class ProductListView(ListView):
         """
         context = super().get_context_data(**kwargs)
         filter_values = self.get_filter_values()
-        context['category'] = filter_values['category']  # генерация названия категории на странице
+        context['category'] = filter_values.pop('category')  # генерация названия категории на странице
         context['form'] = ProductFilterForm(filter_values)  # генерация формы фильтрации товаров
         context['paginator_range'] = context['page_obj'].paginator.get_elided_page_range(
             number=context['page_obj'].number, on_each_side=2, on_ends=1
@@ -229,12 +229,11 @@ class OrderManager:
         for item in order_items:
             order_item_items[item] = OrderItem.objects.filter(order=item)
 
-        context = {
+        return {
             'order_items': order_items_filtered,
             'order_item_items': order_item_items,
             'common': 'common/order_list.html'
         }
-        return context
 
     @staticmethod
     def manage_one(request, admin=False):
@@ -252,8 +251,7 @@ class OrderManager:
         order = Order.objects.get(id=pk)
         order_items = OrderItem.objects.filter(order=order)
 
-        context = {'order': order, 'order_items': order_items, 'common': 'common/order_detail.html'}
-        return context
+        return {'order': order, 'order_items': order_items, 'common': 'common/order_detail.html'}
 
     @staticmethod
     def update_order(request, action, pk):
