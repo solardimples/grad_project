@@ -28,7 +28,7 @@ class ProductListView(ListView):
         Метод генерирует список товаров в зависимости от предоставленных фильтров
         """
         queryset = super().get_queryset()
-        filter_values = self.get_filters(no_pks=True, **{'pk': True})
+        filter_values = self.get_filter_values(no_pks=True, **{'pk': True})
 
         for key, value in filter_values.items():
             if value:
@@ -41,18 +41,15 @@ class ProductListView(ListView):
         Метод генерирует переменные для контекста страницы
         """
         context = super().get_context_data(**kwargs)
-        filter_values = self.get_filters()
-        # генерация названия категории на странице
-        context['category'] = filter_values['category']
-        # генерация формы фильтрации товаров
-        context['form'] = ProductFilterForm(filter_values)
-        # генерация динамического elided_page_range
+        filter_values = self.get_filter_values()
+        context['category'] = filter_values['category']  # генерация названия категории на странице
+        context['form'] = ProductFilterForm(filter_values)  # генерация формы фильтрации товаров
         context['paginator_range'] = context['page_obj'].paginator.get_elided_page_range(
             number=context['page_obj'].number, on_each_side=2, on_ends=1
-        )
+        )  # генерация динамического elided_page_range
         return context
 
-    def get_filters(self, no_pks=False, **kwargs):
+    def get_filter_values(self, no_pks=False, **kwargs):
         """
         Метод возвращает примененные к списку товаров фильтры
         """
@@ -96,7 +93,6 @@ class ProductDetailView(DetailView):
         return {
             'review_form': ReviewForm(),
             'paginator': paginator,
-            'reviews': page,
             'page_obj': page,
             'paginator_range': page.paginator.get_elided_page_range(number=page.number, on_each_side=2, on_ends=1)
         }
